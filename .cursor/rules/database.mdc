@@ -1,0 +1,162 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Regras e melhores práticas para gestão do banco de dados com Supabase/Postgres
+globs: 
+alwaysApply: true
+---
+# Boas Práticas de Banco de Dados
+
+Padronização para operações com Supabase/Postgres em aplicações Next.js seguindo os mais altos padrões de segurança e performance.
+
+## 1. Estrutura de Migrations
+
+### 1.1 Convenção de Arquivos
+- **Localização**: `/supabase/migrations`
+- **Formato**: `[versão]_[descrição].sql` (ex: `202403151430_create_users_table.sql`)
+- **Versionamento**: Usar timestamp no formato `YYYYMMDDHHMM`
+
+### 1.2 Conteúdo das Migrations
+```sql
+-- +migrate Up
+CREATE TABLE public.users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ
+);
+
+-- +migrate Down
+DROP TABLE public.users;
+```
+
+## 2. Execução de Migrations
+
+### 2.1 Ambiente Local
+```bash
+# Aplicar todas as migrations
+npx supabase db reset
+
+# Criar nova migration a partir de alterações locais
+npx supabase migration new nome_da_migration
+```
+
+### 2.2 Produção
+```bash
+# Aplicar migrations via CLI
+npx supabase db remote commit
+npx supabase db remote push
+```
+
+## 3. Boas Práticas de Queries
+
+### 3.1 Segurança
+- Sempre habilitar RLS (Row Level Security)
+- Usar políticas de segurança via SQL
+- Evitar SELECT * - listar colunas explicitamente
+
+### 3.2 Performance
+- Criar índices para queries frequentes
+- Usar paginação com `range` headers
+- Limitar resultados com `LIMIT` e `OFFSET`
+
+Exemplo seguro:
+```typescript
+const { data, error } = await supabase
+  .from('users')
+  .select('id, email')
+  .eq('tenant_id', tenantId)
+  .range(0, 9)
+  .order('created_at', { ascending: false });
+```
+
+## 4. Modelagem de Dados
+
+### 4.1 Convenções
+- Nomes de tabelas em snake_case
+- Colunas de auditoria padrão:
+  - created_at (NOT NULL)
+  - updated_at
+  - deleted_at (para soft delete)
+
+### 4.2 Relacionamentos
+- Usar chaves estrangeiras com constraints
+- Definir ON DELETE CASCADE quando apropriado
+- Criar índices para colunas frequentemente consultadas
+
+## 5. Segurança e Compliance
+
+### 5.1 Políticas de Acesso
+```sql
+CREATE POLICY "Usuários acessam apenas seus dados"
+ON public.users FOR ALL
+USING (tenant_id = current_setting('app.current_tenant')::UUID);
+```
+
+### 5.2 Roles de Autenticação
+- anon: Acesso público (restrito)
+- authenticated: Usuários logados
+- service_role: Acesso privilegiado (usar apenas server-side)
+
+## 6. Documentação
+
+### 6.1 Comentários SQL
+```sql
+COMMENT ON TABLE public.users IS 'Armazena dados básicos de usuários';
+COMMENT ON COLUMN public.users.email IS 'Email único do usuário (case insensitive)';
+```
+
+## 7. Operações Comuns via CLI
+
+```bash
+# Gerar tipos TypeScript
+npx supabase gen types typescript --local > src/database.types.ts
+```
+
+## 8. Monitoramento
+- Usar extensão pg_stat_statements
+- Configurar alertas para:
+  - Long-running queries (> 500ms)
+  - Alto consumo de CPU/Memória
+  - Erros frequentes de autenticação
+
+## 10. Integração com Next.js
+
+### 10.1 Server Components
+```typescript
+import { createServerComponentClient } from '@supabase/ssr'
+
+export async function UsersList() {
+  const supabase = createServerComponentClient()
+  const { data } = await supabase.from('users').select('*')
+  
+  return <div>{/* Renderização */}</div>
+}
+```
+
+### 10.2 Validação com Zod
+```typescript
+import { z } from 'zod'
+
+const UserSchema = z.object({
+  email: z.string().email(),
+  tenant_id: z.string().uuid()
+})
+```
+
+# Fluxo de Migração
+```mermaid
+graph TD
+    A[Desenvolvimento Local] --> B[Criar Migration]
+    B --> C[Testar Localmente]
+    C --> D{Validado?}
+    D -->|Sim| E[Push para Repositório]
+    D -->|Não| F[Corrigir]
+    E --> G[CI/CD Aplica Migrations]
+    G --> H[Verificação Produção]
+```
+
+Esta regra garante a integridade, segurança e performance do banco de dados, alinhada com os requisitos de compliance e as melhores práticas de desenvolvimento SaaS.

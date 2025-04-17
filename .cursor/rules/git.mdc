@@ -1,0 +1,112 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Regras de boas práticas para fluxo de trabalho com Git
+globs: 
+alwaysApply: true
+---
+# Boas Práticas Git
+
+Padronização de fluxo de trabalho para desenvolvimento colaborativo e versionamento eficiente.
+
+## 1. Convenção de Commits
+- **Formato**: `<tipo>[escopo opcional]: <descrição breve>`
+- **Tipos permitidos**:
+  - `fix`: Correção de bugs
+  - `feat`: Nova funcionalidade
+  - `chore`: Tarefas de manutenção
+  - `docs`: Alterações na documentação
+  - `style`: Formatação de código
+  - `refactor`: Refatoração sem mudança de comportamento
+  - `test`: Adição/atualização de testes
+  - `ci`: Mudanças em CI/CD
+  - `build`: Alterações no sistema de build
+  - `perf`: Melhorias de performance
+  - `revert`: Reversão de commit
+
+Exemplo: `feat(auth): implementa login social com Google`
+
+## 2. Nomenclatura de Branches
+- **Padrão**: `<tipo>/<id-issue>-<descrição-curta>`
+- **Tipos**:
+  - `feature/`: Novas funcionalidades
+  - `fix/`: Correções de bugs
+  - `hotfix/`: Correções urgentes em produção
+  - `release/`: Preparação para novas versões
+  - `docs/`: Atualizações de documentação
+
+Exemplo: `feature/123-autenticacao-2fa`
+
+## 3. Política de Pull Requests
+- **Requisitos mínimos**:
+  - Template PR com:
+    - Descrição da mudança
+    - Tipo de alteração (feature, fix, etc.)
+    - Checklist de verificação
+    - Screenshots (se aplicável)
+    - Referência à issue relacionada
+  - Revisão obrigatória por pelo menos 1 dev
+  - Build bem-sucedida no CI
+  - Testes atualizados/validados
+
+## 4. Estratégia de Merge
+- **Squash Merge**: Para branches de feature
+- **Merge Commit**: Apenas para hotfixes e releases
+- **Rebase**: Manter histórico linear antes do merge
+
+## 5. Git Hooks
+- Utilizar Husky para:
+  - Pré-commit: Rodar lint e testes unitários
+  - Commit-msg: Validar formato da mensagem
+  - Pré-push: Rodar testes e2e e de integração
+
+## 6. Versionamento Semântico
+- Seguir [SemVer](mdc:https:/semver.org):
+  - `MAJOR.MINOR.PATCH`
+  - Tags no formato `v1.0.0`
+  - Atualizar versão via Conventional Commits
+
+## 7. Workflow Recomendado
+1. `git fetch --all --prune` antes de qualquer operação
+2. Criar branch a partir da `main` atualizada
+3. Commits atômicos e frequentes
+4. Rebase interativo para organizar histórico
+5. Resolver conflitos localmente
+6. Abrir PR para revisão
+7. Deploy após aprovação e merge
+
+## 8. Ferramentas Recomendadas
+- **GitLens**: Visualização do histórico
+- **Git Graph**: Diagrama de branches
+- **GitHub CLI**: Gestão de PRs via terminal
+- **Commitizen**: Commit messages guiadas
+
+## 9. Branch Protection
+- Bloquear push direto na `main`
+- Requisitar aprovações no PR
+- Exigir status checks bem-sucedidos
+- Manter histórico linear
+
+## 10. Git Flow Adaptado
+- `main`: Branch de produção
+- `staging`: Ambiente de pré-produção
+- `develop`: Integração contínua (opcional)
+- Feature branches: Vida curta (< 3 dias)
+
+# Fluxo de Trabalho
+```mermaid
+graph TD
+    A[Criar Issue] --> B[Criar Branch]
+    B --> C[Desenvolver]
+    C --> D[Abrir PR]
+    D --> E[Revisão]
+    E --> F{Approved?}
+    F -->|Sim| G[Merge e Deploy]
+    F -->|Não| H[Correções]
+    H --> E
+```
+
+Esta regra garante consistência, rastreabilidade e qualidade no versionamento do código, alinhada com as melhores práticas de mercado e as necessidades de um time SaaS.

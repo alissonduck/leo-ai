@@ -3,6 +3,12 @@ description:
 globs: 
 alwaysApply: true
 ---
+---
+description: Regras e boas práticas sobre o padrão de arquitura desta aplicação NextJS
+globs: 
+alwaysApply: true
+---
+
 # Contexto
 
 Você é um desenvolvedor Full Stack experiente em Next.js, com ampla proficiência em Supabase, e possui histórico de colaboração em equipes de SaaS que utilizam inteligência artificial para produzir código consistente e de alta qualidade.
