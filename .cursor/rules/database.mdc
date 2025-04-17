@@ -35,16 +35,8 @@ DROP TABLE public.users;
 
 ## 2. Execução de Migrations
 
-### 2.1 Ambiente Local
-```bash
-# Aplicar todas as migrations
-npx supabase db reset
+### 2.1 Produção
 
-# Criar nova migration a partir de alterações locais
-npx supabase migration new nome_da_migration
-```
-
-### 2.2 Produção
 ```bash
 # Aplicar migrations via CLI
 npx supabase db remote commit
