@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDashboardData } from "../service";
-import { DashboardData } from "../types";
+import { DashboardData, DashboardResult } from "../types";
 
 /**
  * Hook para gerenciar os dados do dashboard
@@ -18,17 +18,23 @@ export function useDashboard() {
     isLoading, 
     error, 
     refetch 
-  } = useQuery({
+  } = useQuery<DashboardResult>({
     queryKey: ['dashboard', period],
     queryFn: () => fetchDashboardData(period),
     staleTime: 1000 * 60 * 5, // 5 minutos
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    gcTime: 1000 * 60 * 10, // 10 minutos (tempo de garbage collection - antigo cacheTime)
   });
 
   const dashboardData: DashboardData | undefined = data?.success ? data.data : undefined;
   
   // Função para trocar o período do dashboard
   const changePeriod = (newPeriod: string) => {
-    setPeriod(newPeriod);
+    if (newPeriod !== period) {
+      setPeriod(newPeriod);
+    }
   };
 
   return {

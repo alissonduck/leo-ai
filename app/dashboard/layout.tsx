@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "./server";
 import { Sidebar } from "@/components/ui/sidebar";
-import { ReactQueryProvider } from "@/lib/react-query";
 
 /**
  * Layout para as páginas protegidas do dashboard
@@ -28,9 +27,7 @@ export default async function DashboardLayout({
       {/* Conteúdo principal */}
       <main className="flex-1 overflow-y-auto">
         <div className="py-6 px-8">
-          <ReactQueryProvider>
-            {children}
-          </ReactQueryProvider>
+          {children}
         </div>
       </main>
     </div>

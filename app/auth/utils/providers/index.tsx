@@ -3,6 +3,7 @@
 import React from 'react';
 import { AuthProvider } from './auth-provider';
 import { NotificationProvider } from './notification-provider';
+import { ReactQueryProvider } from "@/lib/react-query";
 
 /**
  * Componente que combina todos os provedores de contexto da aplicação
@@ -12,7 +13,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
       <NotificationProvider>
-        {children}
+        <ReactQueryProvider>
+          {children}
+        </ReactQueryProvider>
       </NotificationProvider>
     </AuthProvider>
   );
