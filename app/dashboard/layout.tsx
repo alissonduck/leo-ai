@@ -1,24 +1,15 @@
-import { redirect } from "next/navigation";
-import { getSession } from "./server";
 import { Sidebar } from "@/components/ui/sidebar";
 
 /**
  * Layout para as páginas protegidas do dashboard
  * Este layout será compartilhado entre todas as páginas que precisam de autenticação
+ * O middleware já garante que apenas usuários autenticados cheguem aqui.
  */
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Verificar se o usuário está autenticado
-  const { data: { session } } = await getSession();
-  
-  // Se não estiver autenticado, redirecionar para o login
-  if (!session) {
-    redirect("/auth/login");
-  }
-  
   return (
     <div className="flex h-screen bg-slate-50">
       {/* Barra lateral com navegação */}

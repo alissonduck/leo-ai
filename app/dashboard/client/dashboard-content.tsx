@@ -4,7 +4,9 @@ import { useDashboard } from "../hooks";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatCard } from "./stat-card";
 import { RecentOrders } from "./recent-orders";
-import { DollarSign, Users, ShoppingBag, BarChart } from "lucide-react";
+import { DollarSign, Users, ShoppingBag, BarChart, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuthContext } from "@/app/auth/utils/providers";
 
 /**
  * Formata um valor monetário para exibição
@@ -30,11 +32,22 @@ export function DashboardContent() {
     changePeriod 
   } = useDashboard();
   
+  // Obter a função de logout do contexto de autenticação
+  const { logout } = useAuthContext();
+  
   if (error) {
     return (
-      <div className="bg-red-50 p-4 rounded-md text-red-700">
-        <h3 className="text-lg font-medium">Erro ao carregar o dashboard</h3>
-        <p className="mt-1">{String(error)}</p>
+      <div className="bg-red-50 p-6 rounded-md text-red-800 border border-red-200 flex flex-col items-center text-center">
+        <h3 className="text-xl font-semibold mb-2">Erro ao carregar o dashboard</h3>
+        <p className="mb-4 text-sm">{String(error)}</p>
+        <Button 
+          variant="destructive"
+          onClick={logout}
+          className="mt-2"
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Fazer Logout
+        </Button>
       </div>
     );
   }
