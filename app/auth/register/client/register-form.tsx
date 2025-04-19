@@ -26,14 +26,14 @@ export function RegisterForm() {
 
   // Função para lidar com o envio do formulário de usuário
   const handleUserSubmit = (data: UserRegistrationData) => {
-    updateUserData(data);
-    submitUserRegistration();
+    // Atualizar dados e enviar diretamente, para evitar problemas de timing com estado
+    submitUserRegistration(data);
   };
 
   // Função para lidar com o envio do formulário de empresa
   const handleCompanySubmit = (data: CompanyRegistrationData) => {
-    updateCompanyData(data);
-    submitCompanyRegistration();
+    // Atualizar dados e enviar diretamente, para evitar problemas de timing com estado
+    submitCompanyRegistration(data);
   };
 
   return (

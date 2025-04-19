@@ -35,10 +35,10 @@ export function ProgressSteps({
     <div className="mb-8">
       {/* Título e subtítulo */}
       <div className="text-center mb-4">
-        <h2 className="text-xl font-semibold mb-1">
+        {/* <h2 className="text-xl font-semibold mb-1">
           {currentStep === 1 && "dados do usuário"}
           {currentStep === 2 && "dados da empresa"}
-        </h2>
+        </h2> */}
         <p className="text-sm text-gray-500">
           Etapa {currentStep} de {totalSteps}
         </p>
@@ -52,7 +52,7 @@ export function ProgressSteps({
         />
       </div>
 
-      {/* Indicadores de etapas */}
+      {/* Indicadores de etapas
       <div className="flex justify-between">
         {steps.map((step) => (
           <div key={step} className="flex flex-col items-center">
@@ -94,7 +94,7 @@ export function ProgressSteps({
             </span>
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 } 

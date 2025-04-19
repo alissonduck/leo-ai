@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 
 // Lista de rotas públicas (que não requerem autenticação)
-const publicRoutes = ["/login", "/register", "/register/success"];
+const publicRoutes = ["/auth/register", "/auth/login", "/auth/password-reset"];
 
 export async function middleware(request: NextRequest) {
   // Atualiza a sessão do Supabase

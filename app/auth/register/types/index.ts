@@ -17,7 +17,7 @@ export interface UserRegistrationData {
 export interface CompanyRegistrationData {
   name: string;
   domain?: string;
-  description?: string;
+  cnpj?: string;
 }
 
 /**

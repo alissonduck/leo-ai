@@ -1,0 +1,27 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Design dos componentes e frontend
+globs: 
+alwaysApply: true
+---
+
+- **Visual e Design**: No design e frontend, busca-se uma interface clean, moderna e elegante, utilizando componentes do Shadcn UI.
+
+O objetivo é construir uma aplicação SaaS que siga as melhores práticas e estratégias de Product Design para Product-Led Growth, visando a aquisição e retenção de usuários.
+
+- **Cores**: Crie um Style Guide tendo a cor "Slate" do Shadcn como cor principal da plataforma. Como iremos criar um visual clean e moderno, com a cor "Slate" teremos um visual minimalista também.
+
+- **Frontend**: Desenvolva o frontend de forma componentizada utilizando Next.js com React, Shadcn, Radix UI e TailwindCSS. Os componentes devem ser pequenos e possuir responsabilidade única.
+
+- **Componentes do Next.js**:
+  - **Server Components (RSC)**: Utilize-os para buscar dados, acessar recursos do servidor ou evitar sobrecarga desnecessária no cliente.
+  - **Client Components**: Empregue-os quando houver necessidade de interatividade, manipulação de estado ou eventos dinâmicos.
+  - **Combinação Estratégica**: Combine Server e Client Components de forma estratégica para maximizar a eficiência e a experiência do usuário.
+
+- **Componentes Shadcn UI**: Caso seja necessário importar novos componentes do Shadcn UI, por não termos algum no projeto, utilize o comando "bunx --bun shadcn@latest add {component_name}" para adicionar novos componentes Shadcn UI no projeto. 
+
+Crie componentes do zero apenas quando o Shadcn não possui um componente padrão.

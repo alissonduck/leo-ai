@@ -30,7 +30,7 @@ export function useRegister() {
     company: {
       name: "",
       domain: "",
-      description: "",
+      cnpj: "",
     },
     currentStep: 1,
     totalSteps: 2,
@@ -109,10 +109,18 @@ export function useRegister() {
   };
 
   // Funções de submissão para cada etapa
-  const submitUserRegistration = async () => {
+  const submitUserRegistration = async (userData?: UserRegistrationData) => {
     try {
+      // Usar os dados fornecidos diretamente ou os dados do estado
+      const dataToValidate = userData || formState.user;
+      
       // Validar dados do usuário
-      const validatedUserData = userRegistrationSchema.parse(formState.user);
+      const validatedUserData = userRegistrationSchema.parse(dataToValidate);
+      
+      // Atualizar o estado com os dados validados, se necessário
+      if (userData) {
+        updateUserData(validatedUserData);
+      }
       
       // Iniciar mutação para registrar usuário
       userMutation.mutate(validatedUserData);
@@ -122,10 +130,18 @@ export function useRegister() {
     }
   };
 
-  const submitCompanyRegistration = async () => {
+  const submitCompanyRegistration = async (companyData?: CompanyRegistrationData) => {
     try {
+      // Usar os dados fornecidos diretamente ou os dados do estado
+      const dataToValidate = companyData || formState.company;
+      
       // Validar dados da empresa
-      const validatedCompanyData = companyRegistrationSchema.parse(formState.company);
+      const validatedCompanyData = companyRegistrationSchema.parse(dataToValidate);
+      
+      // Atualizar o estado com os dados validados, se necessário
+      if (companyData) {
+        updateCompanyData(validatedCompanyData);
+      }
       
       // Iniciar mutação para registrar empresa
       companyMutation.mutate(validatedCompanyData);

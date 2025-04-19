@@ -26,8 +26,9 @@ export const companyRegistrationSchema = z.object({
   domain: z
     .string()
     .optional(),
-  description: z
+  cnpj: z
     .string()
+    .regex(/^\d{14}$/, { message: "CNPJ deve conter 14 dígitos numéricos" })
     .optional(),
 });
 
