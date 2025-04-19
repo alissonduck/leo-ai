@@ -281,3 +281,57 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Estilos para os Toasts Sonner Customizados */
+.toast-success {
+  background-color: #16a34a !important; /* Verde (green-600) */
+  color: white !important;
+  border-color: #15803d !important; /* Verde mais escuro (green-700) */
+}
+
+.toast-error {
+  background-color: #dc2626 !important; /* Vermelho (red-600) */
+  color: white !important;
+  border-color: #b91c1c !important; /* Vermelho mais escuro (red-700) */
+}
+
+.toast-warning {
+  background-color: #f97316 !important; /* Laranja (orange-500) */
+  color: white !important;
+  border-color: #ea580c !important; /* Laranja mais escuro (orange-600) */
+}
+
+.toast-info {
+  background-color: #2563eb !important; /* Azul (blue-600) */
+  color: white !important;
+  border-color: #1d4ed8 !important; /* Azul mais escuro (blue-700) */
+}
+
+/* Garante que o texto dentro dos toasts coloridos seja branco */
+.toast-success > div > .title,
+.toast-success > div > .description,
+.toast-error > div > .title,
+.toast-error > div > .description,
+.toast-warning > div > .title,
+.toast-warning > div > .description,
+.toast-info > div > .title,
+.toast-info > div > .description {
+   color: white !important;
+}
+
+/* Estilo opcional para os botões de ação dentro dos toasts coloridos */
+.toast-success button,
+.toast-error button,
+.toast-warning button,
+.toast-info button {
+    background-color: rgba(255, 255, 255, 0.1) !important; /* Fundo levemente branco */
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.toast-success button:hover,
+.toast-error button:hover,
+.toast-warning button:hover,
+.toast-info button:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important; /* Fundo mais claro no hover */
+}
