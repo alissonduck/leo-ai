@@ -22,8 +22,7 @@ export async function middleware(request: NextRequest) {
   
   // Se não tiver sessão e estiver tentando acessar uma rota protegida, redireciona para o login
   if (!hasSession) {
-    const redirectUrl = new URL("/login", request.url);
-    redirectUrl.searchParams.set("next", pathname);
+    const redirectUrl = new URL("/auth/login", request.url);
     return NextResponse.redirect(redirectUrl);
   }
   
