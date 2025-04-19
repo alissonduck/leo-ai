@@ -1,44 +1,52 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { updateSession } from "@/utils/supabase/middleware";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-// Lista de rotas públicas (que não requerem autenticação)
-const publicRoutes = ["/auth/register", "/auth/login", "/auth/password-reset"];
+/**
+ * Middleware para verificar a autenticação do usuário
+ * Redireciona para a página de login se o usuário não estiver autenticado
+ * em rotas protegidas e evita visitar páginas de autenticação quando já está logado
+ */
+export async function middleware(req: NextRequest) {
+  // Lista de rotas protegidas que exigem autenticação
+  const protectedRoutes = ['/dashboard', '/profile', '/settings', '/projects', '/companies'];
+  // Lista de rotas de autenticação
+  const authRoutes = ['/auth/login', '/auth/register', '/auth/password-reset'];
 
-export async function middleware(request: NextRequest) {
-  // Atualiza a sessão do Supabase
-  const response = await updateSession(request);
-  
-  // Obtém o caminho da URL
-  const pathname = request.nextUrl.pathname;
-  
-  // Verifica se é uma rota de API ou é uma rota pública
-  if (pathname.startsWith("/api") || publicRoutes.some(route => pathname.startsWith(route))) {
-    return response;
+  const isProtectedRoute = protectedRoutes.some(route => req.nextUrl.pathname.startsWith(route));
+  const isAuthRoute = authRoutes.some(route => req.nextUrl.pathname.startsWith(route));
+
+  // Buscar o cookie de sessão do Supabase (formato: sb-<id>-auth-token)
+  const supabaseCookies = req.cookies.getAll();
+  const hasAuthCookie = supabaseCookies.some(cookie => 
+    cookie.name.startsWith('sb-') && 
+    (cookie.name.includes('-auth-token') || cookie.name.includes('-access-token'))
+  );
+
+  // Verifica autenticação de forma simples com base na presença do cookie
+  // Verificações mais robustas serão realizadas no Server Component
+  if (isProtectedRoute && !hasAuthCookie) {
+    // Redirecionar para login se não estiver autenticado
+    return NextResponse.redirect(new URL('/auth/login', req.url));
   }
 
-  // Obtém o cookie de sessão
-  const hasSession = request.cookies.has("sb-session");
-  
-  // Se não tiver sessão e estiver tentando acessar uma rota protegida, redireciona para o login
-  if (!hasSession) {
-    const redirectUrl = new URL("/auth/login", request.url);
-    return NextResponse.redirect(redirectUrl);
+  if (isAuthRoute && hasAuthCookie) {
+    // Redirecionar para dashboard se já estiver autenticado
+    return NextResponse.redirect(new URL('/dashboard', req.url));
   }
-  
-  return response;
+
+  return NextResponse.next();
 }
 
-// Define as rotas que o middleware deve processar
+/**
+ * Configuração do middleware - definindo em quais rotas ele será executado
+ */
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (SEO files)
-     * - public directory (public files)
-     */
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.png$).*)",
+    '/dashboard/:path*',
+    '/profile/:path*',
+    '/settings/:path*',
+    '/projects/:path*',
+    '/companies/:path*',
+    '/auth/:path*',
   ],
 };

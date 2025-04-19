@@ -37,14 +37,14 @@ export function useAuth() {
           // Obter dados adicionais do usuário se necessário
           const { data } = await supabase
             .from('profiles')
-            .select('name, avatar_url')
+            .select('full_name, avatar_url')
             .eq('id', session.user.id)
             .single();
             
           setUser({
             id: session.user.id,
             email: session.user.email || '',
-            name: data?.name,
+            name: data?.full_name,
             avatar_url: data?.avatar_url
           });
         } else {
@@ -64,25 +64,27 @@ export function useAuth() {
     // Configurar ouvinte para mudanças na autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (session?.user) {
-          // Atualizar usuário quando a autenticação mudar
-          const { data } = await supabase
-            .from('profiles')
-            .select('name, avatar_url')
-            .eq('id', session.user.id)
-            .single();
-            
-          setUser({
-            id: session.user.id,
-            email: session.user.email || '',
-            name: data?.name,
-            avatar_url: data?.avatar_url
-          });
-        } else {
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          if (session?.user) {
+            // Atualizar usuário quando a autenticação mudar
+            const { data } = await supabase
+              .from('profiles')
+              .select('full_name, avatar_url')
+              .eq('id', session.user.id)
+              .single();
+              
+            setUser({
+              id: session.user.id,
+              email: session.user.email || '',
+              name: data?.full_name,
+              avatar_url: data?.avatar_url
+            });
+          }
+        } else if (event === 'SIGNED_OUT') {
           setUser(null);
         }
         
-        // Refresh router
+        // Atualizar a página atual para aplicar middleware
         router.refresh();
       }
     );
@@ -106,22 +108,12 @@ export function useAuth() {
     }
   };
 
-  /**
-   * Verifica se o usuário está autenticado e redireciona se não estiver
-   */
-  const requireAuth = (redirectTo = '/auth/login') => {
-    if (!loading && !user) {
-      router.push(redirectTo);
-      return false;
-    }
-    return true;
-  };
-
   return {
     user,
     loading,
     isAuthenticated: !!user,
     logout,
-    requireAuth
+    // Função para verificar se o usuário está autenticado (sem redirecionamento)
+    isLoggedIn: () => !!user
   };
 } 

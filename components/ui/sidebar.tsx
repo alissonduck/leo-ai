@@ -88,36 +88,6 @@ export function Sidebar() {
             </li>
           ))}
         </ul>
-        
-        {/* Eventos futuros */}
-        <div className="mt-8">
-          <div 
-            className="flex items-center justify-between px-3 py-2 text-xs font-semibold text-slate-500 cursor-pointer"
-            onClick={() => setEventsExpanded(!eventsExpanded)}
-          >
-            <span>UPCOMING EVENTS</span>
-            {eventsExpanded ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
-          </div>
-          
-          {eventsExpanded && (
-            <ul role="list" className="mt-1 space-y-1">
-              {events.map((event) => (
-                <li key={event.id}>
-                  <Link
-                    href={event.href}
-                    className="block rounded-md py-2 pl-10 pr-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                  >
-                    {event.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
       </nav>
 
       {/* Links de suporte */}

@@ -9,7 +9,7 @@ interface AuthContextType {
   loading: boolean;
   isAuthenticated: boolean;
   logout: () => Promise<void>;
-  requireAuth: (redirectTo?: string) => boolean;
+  isLoggedIn: () => boolean;
 }
 
 // Criar o contexto
