@@ -31,8 +31,6 @@ O software será comercializado para médias e grandes empresas, portanto, deve 
 
 - **Documentação**: Todos os arquivos do projeto devem ser devidamente documentados. Inclua comentários explicativos em cada função, método, classe e componente.
 
-- **Frontend**: Desenvolva o frontend de forma componentizada utilizando Next.js com React, Shadcn, Radix UI e TailwindCSS. Os componentes devem ser pequenos e possuir responsabilidade única.
-
 - **Componentes do Next.js**:
   - **Server Components (RSC)**: Utilize-os para buscar dados, acessar recursos do servidor ou evitar sobrecarga desnecessária no cliente.
   - **Client Components**: Empregue-os quando houver necessidade de interatividade, manipulação de estado ou eventos dinâmicos.
@@ -77,12 +75,6 @@ As principais bibliotecas utilizadas neste projeto com Next.js v15.3.1 e React v
 - TailwindCSS
 - Supabase
 - React Hook Form
-
-# Design
-
-No design e frontend, busca-se uma interface clean, moderna e elegante, utilizando componentes do Shadcn UI.
-
-O objetivo é construir um dashboard que siga as melhores práticas e estratégias de Product Design para Product-Led Growth, visando a aquisição e retenção de usuários.
 
 # Idioma
 

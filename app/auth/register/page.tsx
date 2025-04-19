@@ -1,22 +1,27 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { RegisterForm } from "./client";
-import { ReactQueryProvider } from "@/lib/react-query";
-import { getSession } from "./server";
+import { checkRegistrationStatus } from "./service"; // Importar o novo serviço
 
 /**
  * Página de registro
  * Contém o formulário multi-etapas para registro de usuários e empresas
  */
 export default async function RegisterPage() {
-  // Verificar se o usuário já está autenticado
-  const { data: { session } } = await getSession();
+  // Verificar status de autenticação e registro usando o serviço/Server Action
+  const { isAuthenticated, isRegistrationComplete } = await checkRegistrationStatus();
   
-  // Se já estiver autenticado, redirecionar para o dashboard
-  if (session) {
+  // Se autenticado E o registro estiver completo (Step 2 feito), redirecionar
+  if (isAuthenticated && isRegistrationComplete) {
     redirect("/dashboard");
   }
   
+  // Se isAuthenticated for true mas isRegistrationComplete for false,
+  // significa que o Step 1 foi feito, mas o Step 2 não.
+  // A página será renderizada normalmente, permitindo que o RegisterForm
+  // (no lado do cliente) mostre o Step 2.
+
+  // Renderiza a página se não houver sessão ou se o registro não estiver completo
   return (
     <div className="w-full max-w-md mx-auto py-8 px-4 sm:px-6">
       <div className="mb-8 text-center">
@@ -35,9 +40,7 @@ export default async function RegisterPage() {
       </div>
       
       <div className="bg-white shadow-xl rounded-xl p-6 border border-gray-100">
-        <ReactQueryProvider>
-          <RegisterForm />
-        </ReactQueryProvider>
+        <RegisterForm />
       </div>
 
       <div className="mt-8 text-center text-sm text-gray-500">

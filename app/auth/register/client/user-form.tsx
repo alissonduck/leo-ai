@@ -1,11 +1,14 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { UserRegistrationData } from "../types";
-import { userRegistrationSchema } from "../schema";
+import { userRegistrationSchema, UserRegistrationFormData } from "../schema";
+import { formatPhone, removePhoneFormat } from "@/utils/format";
 
 /**
  * Componente de formulário para o primeiro passo do registro
@@ -39,15 +42,40 @@ export function UserForm({
   isSubmitting,
   error,
 }: UserFormProps) {
-  // Configuração do formulário com react-hook-form e zod
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<UserRegistrationData>({
+    setValue,
+    watch,
+  } = useForm<UserRegistrationFormData>({
     resolver: zodResolver(userRegistrationSchema),
-    defaultValues: initialData,
+    mode: 'onSubmit',
+    defaultValues: {
+      ...initialData,
+      confirmPassword: "",
+      phone: initialData.phone || "",
+    },
   });
+
+  const initialPhoneValue = watch('phone');
+  const [formattedPhone, setFormattedPhone] = useState<string>(() => 
+    initialPhoneValue ? formatPhone(initialPhoneValue) : ""
+  );
+
+  useEffect(() => {
+    const unformattedInitial = initialData.phone || "";
+    setFormattedPhone(formatPhone(unformattedInitial));
+  }, [initialData.phone]);
+
+  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = event.target.value;
+    const digitsOnly = removePhoneFormat(rawValue);
+    const maskedValue = formatPhone(digitsOnly);
+    
+    setFormattedPhone(maskedValue);
+    setValue("phone", digitsOnly, { shouldValidate: true });
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -59,13 +87,8 @@ export function UserForm({
       )}
 
       {/* Nome completo */}
-      <div className="space-y-2">
-        <label
-          htmlFor="full_name"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          Nome completo
-        </label>
+      <div className="space-y-1">
+        <Label htmlFor="full_name">Nome completo</Label>
         <Input
           id="full_name"
           placeholder="Digite seu nome completo"
@@ -77,13 +100,8 @@ export function UserForm({
       </div>
 
       {/* Email */}
-      <div className="space-y-2">
-        <label
-          htmlFor="email"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          E-mail
-        </label>
+      <div className="space-y-1">
+        <Label htmlFor="email">E-mail</Label>
         <Input
           id="email"
           type="email"
@@ -95,22 +113,47 @@ export function UserForm({
         )}
       </div>
 
+      {/* Telefone (opcional) */}
+      <div className="space-y-1">
+        <Label htmlFor="phone">WhatsApp</Label>
+        <Input
+          id="phone"
+          type="tel"
+          placeholder="(XX) XXXXX-XXXX"
+          value={formattedPhone}
+          onChange={handlePhoneChange}
+          maxLength={15}
+        />
+        {errors.phone && (
+          <p className="text-sm text-red-500 mt-1">{errors.phone.message}</p>
+        )}
+      </div>
+
       {/* Senha */}
-      <div className="space-y-2">
-        <label
-          htmlFor="password"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          Senha
-        </label>
+      <div className="space-y-1">
+        <Label htmlFor="password">Senha</Label>
         <Input
           id="password"
           type="password"
-          placeholder="Digite sua senha"
+          placeholder="Mínimo 8 caracteres"
           {...register("password")}
         />
         {errors.password && (
           <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+        )}
+      </div>
+
+      {/* Confirmar Senha */}
+      <div className="space-y-1">
+        <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+        <Input
+          id="confirmPassword"
+          type="password"
+          placeholder="Repita a senha"
+          {...register("confirmPassword")}
+        />
+        {errors.confirmPassword && (
+          <p className="text-sm text-red-500 mt-1">{errors.confirmPassword.message}</p>
         )}
       </div>
 

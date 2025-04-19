@@ -19,7 +19,8 @@ export function formatCurrency(value: number): string {
  * @param value String ou número a ser formatado
  * @returns CNPJ formatado
  */
-export function formatCNPJ(value: string | number): string {
+export function formatCNPJ(value: string | number | undefined | null): string {
+  if (!value) return "";
   // Converte para string e remove caracteres não numéricos
   const cnpjDigits = String(value).replace(/\D/g, "");
   
@@ -39,6 +40,42 @@ export function formatCNPJ(value: string | number): string {
  * @param formattedValue CNPJ formatado
  * @returns Apenas os números do CNPJ
  */
-export function removeCNPJFormat(formattedValue: string): string {
+export function removeCNPJFormat(formattedValue: string | undefined | null): string {
+  if (!formattedValue) return "";
+  return formattedValue.replace(/\D/g, "");
+}
+
+/**
+ * Formata um número de telefone para os padrões (XX) XXXX-XXXX ou (XX) XXXXX-XXXX
+ * @param value String ou número a ser formatado
+ * @returns Telefone formatado
+ */
+export function formatPhone(value: string | number | undefined | null): string {
+  if (!value) return "";
+  // Converte para string e remove caracteres não numéricos
+  const phoneDigits = String(value).replace(/\D/g, "");
+  
+  // Limita a 11 dígitos
+  const phoneLimited = phoneDigits.slice(0, 11);
+  
+  // Aplica a máscara
+  if (phoneLimited.length <= 2) {
+    return `(${phoneLimited}`;
+  } else if (phoneLimited.length <= 6) {
+    return `(${phoneLimited.slice(0, 2)}) ${phoneLimited.slice(2)}`;
+  } else if (phoneLimited.length <= 10) {
+    return `(${phoneLimited.slice(0, 2)}) ${phoneLimited.slice(2, 6)}-${phoneLimited.slice(6)}`;
+  } else {
+    return `(${phoneLimited.slice(0, 2)}) ${phoneLimited.slice(2, 7)}-${phoneLimited.slice(7)}`;
+  }
+}
+
+/**
+ * Remove formatação do telefone, mantendo apenas números
+ * @param formattedValue Telefone formatado
+ * @returns Apenas os números do telefone
+ */
+export function removePhoneFormat(formattedValue: string | undefined | null): string {
+  if (!formattedValue) return "";
   return formattedValue.replace(/\D/g, "");
 }

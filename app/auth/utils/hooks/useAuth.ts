@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
@@ -22,6 +22,7 @@ export function useAuth() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = createClient();
 
   // Carrega o usuário atual da sessão no primeiro render
@@ -64,6 +65,8 @@ export function useAuth() {
     // Configurar ouvinte para mudanças na autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        let shouldRefresh = true;
+
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
           if (session?.user) {
             // Atualizar usuário quando a autenticação mudar
@@ -79,13 +82,18 @@ export function useAuth() {
               name: data?.full_name,
               avatar_url: data?.avatar_url
             });
+
+            if (event === 'SIGNED_IN' && pathname === '/auth/register') {
+              shouldRefresh = false;
+            }
           }
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
         }
         
-        // Atualizar a página atual para aplicar middleware
-        router.refresh();
+        if (shouldRefresh) {
+          router.refresh();
+        }
       }
     );
 
@@ -93,7 +101,7 @@ export function useAuth() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase, router]);
+  }, [supabase, router, pathname]);
 
   /**
    * Função para fazer logout do usuário

@@ -10,8 +10,8 @@ import { UserRegistrationData, RegisterUserResult } from "../types";
  */
 
 /**
- * Registra um novo usuário no Supabase Auth
- * @param userData Dados do usuário a ser registrado
+ * Registra um novo usuário no Supabase Auth e cria seu perfil
+ * @param userData Dados do usuário a ser registrado (inclui email, senha, nome e telefone opcional)
  * @returns Resultado da operação com sucesso ou erro
  */
 export async function registerUser(userData: UserRegistrationData): Promise<RegisterUserResult> {
@@ -19,60 +19,69 @@ export async function registerUser(userData: UserRegistrationData): Promise<Regi
     const supabase = await createClient();
 
     // Registrar o usuário no Auth
-    const { data, error } = await supabase.auth.signUp({
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email: userData.email,
       password: userData.password,
       options: {
-        data: {
-          full_name: userData.full_name,
-        },
+        // Não passamos mais o full_name aqui, ele vai direto no profile
       },
     });
 
-    if (error) {
-      console.error("Erro ao registrar usuário:", error.message);
+    if (authError) {
+      console.error("Erro ao registrar usuário no Auth:", authError.message);
+      // Simplificar mensagem de erro para o usuário
+      const userFriendlyError = authError.message.includes("User already registered")
+        ? "Este e-mail já está cadastrado."
+        : "Falha ao registrar usuário. Verifique os dados e tente novamente.";
       return { 
         success: false, 
-        error: error.message 
+        error: userFriendlyError 
       };
     }
 
-    // Criar perfil na tabela profiles
-    if (data?.user) {
+    // Criar perfil na tabela profiles somente se o signUp foi bem-sucedido
+    if (authData?.user) {
       const { error: profileError } = await supabase
         .from("profiles")
         .insert({
-          id: data.user.id,
+          id: authData.user.id, // Usar o ID retornado pelo signUp
+          email: userData.email, // Salvar email no perfil
           full_name: userData.full_name,
+          phone: userData.phone, // Salvar telefone no perfil (será null se não fornecido)
           created_at: new Date().toISOString(),
         });
 
       if (profileError) {
-        console.error("Erro ao criar perfil:", profileError.message);
-        // Ainda retornamos sucesso pois o usuário foi criado
-        // Um job pode sincronizar os perfis faltantes depois
+        console.error("Erro crítico ao criar perfil após signUp:", profileError.message);
+        // Considerar isso um erro grave, pois o usuário existe no Auth mas não no Profiles
+        // Idealmente, teríamos um mecanismo de retry ou alerta aqui.
+        // Por ora, retornamos um erro mais específico.
         return { 
-          success: true, 
-          userId: data.user.id,
-          error: "Perfil não pôde ser criado completamente" 
+          success: false, 
+          error: "Falha ao finalizar a criação do perfil. Contate o suporte." 
+          // Não retornamos userId aqui, pois o processo não foi completo
         };
       }
 
+      // Sucesso completo
       return { 
         success: true, 
-        userId: data.user.id 
+        userId: authData.user.id
       };
     }
 
+    // Caso inesperado onde authData.user não existe mesmo sem authError
+    console.error("Registro de usuário: authData.user não encontrado após signUp sem erro.");
     return { 
       success: false, 
-      error: "Falha ao criar usuário. Tente novamente." 
+      error: "Falha inesperada durante o registro. Tente novamente." 
     };
+
   } catch (error) {
-    console.error("Erro não tratado:", error);
+    console.error("Erro não tratado em registerUser:", error);
     return { 
       success: false, 
-      error: "Erro interno do servidor" 
+      error: "Erro interno do servidor ao tentar registrar." 
     };
   }
 } 
