@@ -5,11 +5,12 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { 
   LayoutDashboard,
-  CalendarDays,
-  ShoppingCart,
   Settings,
   HelpCircle,
-  FileText
+  FileText,
+  Blend,
+  Binoculars,
+  Lightbulb
 } from "lucide-react";
 import { NavUser } from "./nav-user";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 
 /**
  * Interface para os itens de menu
@@ -38,9 +46,19 @@ export function Sidebar() {
   // Menu de navegação principal
   const navigation: MenuItem[] = [
     { name: "Dashboard", href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" />, current: pathname === '/dashboard' },
-    { name: "Ideias", href: "/ideas", icon: <CalendarDays className="w-5 h-5" />, current: pathname.startsWith('/ideas') },
-    { name: "Pedidos", href: "/orders", icon: <ShoppingCart className="w-5 h-5" />, current: pathname.startsWith('/orders') },
-    { name: "Configurações", href: "/settings", icon: <Settings className="w-5 h-5" />, current: pathname.startsWith('/settings') },
+    { name: "Ideias", href: "/ideas", icon: <Lightbulb className="w-5 h-5" />, current: pathname.startsWith('/ideas') },
+    { name: "Descoberta", href: "/discovery", icon: <Binoculars className="w-5 h-5" />, current: pathname.startsWith('/discovery') },
+    { name: "Estratégia", href: "/strategy", icon: <Blend className="w-5 h-5" />, current: pathname.startsWith('/strategy') },
+    { name: "Configurações", href: "", icon: <Settings className="w-5 h-5" />, current: pathname.startsWith('/config/') },
+  ];
+
+  // Sub-itens do menu de Configurações
+  const settingsSubMenu = [
+    { name: "Minha empresa", href: "/config/company" },
+    { name: "Projetos", href: "/config/projects" },
+    { name: "Equipes", href: "/config/teams" },
+    { name: "Usuários", href: "/config/users" },
+    { name: "Faturamento", href: "/config/billing" },
   ];
 
   return (
@@ -73,25 +91,63 @@ export function Sidebar() {
         <ul role="list" className="space-y-1">
           {navigation.map((item) => (
             <li key={item.name}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
-                      item.current 
-                        ? 'bg-slate-100 text-slate-900' 
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
-                      'justify-center' // Layout fixo recolhido
-                    )}
-                  >
-                    {item.icon} 
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  <p>{item.name}</p>
-                </TooltipContent>
-              </Tooltip>
+              {item.name === "Configurações" ? (
+                // Caso especial para Configurações: Usar DropdownMenu
+                <DropdownMenu>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      {/* O DropdownMenuTrigger agora envolve o ícone */}
+                      <DropdownMenuTrigger asChild>
+                        <button // Usar um botão ou div como trigger real
+                          className={cn(
+                            "flex items-center w-full gap-3 rounded-md px-3 py-2 text-sm font-medium",
+                            item.current 
+                              ? 'bg-slate-100 text-slate-900' 
+                              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+                            'justify-center' // Layout fixo recolhido
+                          )}
+                        >
+                          {item.icon}
+                        </button>
+                      </DropdownMenuTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{item.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <DropdownMenuContent side="right" align="start" sideOffset={5}>
+                    <DropdownMenuLabel>Configurações</DropdownMenuLabel>
+                    {settingsSubMenu.map((subItem) => (
+                      <DropdownMenuItem key={subItem.name} asChild>
+                        <Link href={subItem.href} className="cursor-pointer">
+                          {subItem.name}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                // Lógica original para outros itens de menu
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
+                        item.current 
+                          ? 'bg-slate-100 text-slate-900' 
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+                        'justify-center' // Layout fixo recolhido
+                      )}
+                    >
+                      {item.icon} 
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p>{item.name}</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </li>
           ))}
         </ul>
