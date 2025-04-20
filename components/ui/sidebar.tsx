@@ -13,6 +13,11 @@ import {
 } from "lucide-react";
 import { NavUser } from "./nav-user";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 /**
  * Interface para os itens de menu
@@ -33,7 +38,7 @@ export function Sidebar() {
   // Menu de navegação principal
   const navigation: MenuItem[] = [
     { name: "Dashboard", href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" />, current: pathname === '/dashboard' },
-    { name: "Eventos", href: "/events", icon: <CalendarDays className="w-5 h-5" />, current: pathname.startsWith('/events') },
+    { name: "Ideias", href: "/ideas", icon: <CalendarDays className="w-5 h-5" />, current: pathname.startsWith('/ideas') },
     { name: "Pedidos", href: "/orders", icon: <ShoppingCart className="w-5 h-5" />, current: pathname.startsWith('/orders') },
     { name: "Configurações", href: "/settings", icon: <Settings className="w-5 h-5" />, current: pathname.startsWith('/settings') },
   ];
@@ -68,19 +73,25 @@ export function Sidebar() {
         <ul role="list" className="space-y-1">
           {navigation.map((item) => (
             <li key={item.name}>
-              <Link
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
-                  item.current 
-                    ? 'bg-slate-100 text-slate-900' 
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
-                  'justify-center' // Layout fixo recolhido
-                )}
-                title={item.name} // Tooltip sempre ativo
-              >
-                {item.icon} 
-              </Link>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
+                      item.current 
+                        ? 'bg-slate-100 text-slate-900' 
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+                      'justify-center' // Layout fixo recolhido
+                    )}
+                  >
+                    {item.icon} 
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>{item.name}</p>
+                </TooltipContent>
+              </Tooltip>
             </li>
           ))}
         </ul>
@@ -90,36 +101,48 @@ export function Sidebar() {
       <div className={cn("mt-auto border-t border-slate-200", "px-2 py-4")}> 
         <ul role="list" className="space-y-1">
           <li>
-            <Link
-              href="/support"
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium", 
-                "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
-                'justify-center' // Layout fixo recolhido
-              )}
-              title={"Suporte"} // Tooltip sempre ativo
-            >
-              <HelpCircle className="h-5 w-5" />
-            </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/support"
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium", 
+                    "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                    'justify-center' // Layout fixo recolhido
+                  )}
+                >
+                  <HelpCircle className="h-5 w-5" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>Suporte</p>
+              </TooltipContent>
+            </Tooltip>
           </li>
           <li>
-            <Link
-              href="/changelog"
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium", 
-                "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
-                'justify-center' // Layout fixo recolhido
-              )}
-              title={"Novidades"} // Tooltip sempre ativo
-            >
-              <FileText className="h-5 w-5" />
-            </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/changelog"
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium", 
+                    "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                    'justify-center' // Layout fixo recolhido
+                  )}
+                >
+                  <FileText className="h-5 w-5" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>Novidades</p>
+              </TooltipContent>
+            </Tooltip>
           </li>
         </ul>
       </div>
       
       {/* Componente de usuário */}
-      <div className={cn("px-2 pb-4")}>
+      <div className={cn("px-2 pb-4 flex justify-center")}>
         <NavUser collapsed={true} /> {/* Passar true fixo */}
       </div>
     </div>
