@@ -17,8 +17,6 @@ export function RegisterForm() {
     userMutation,
     companyMutation,
     prevStep,
-    updateUserData,
-    updateCompanyData,
     submitUserRegistration,
     submitCompanyRegistration,
     progressPercentage,

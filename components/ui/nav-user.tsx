@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from 'react';
 import Link from "next/link";
 import { LogOut, User, Lock } from "lucide-react";
 import { useAuthContext } from "@/app/auth/utils/providers";
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { ChangePasswordModal } from '@/app/auth/change-password/client/change-password-modal';
 
 /**
  * Componente de navegação do usuário com menu dropdown
@@ -21,10 +23,16 @@ import { Button } from "@/components/ui/button";
  */
 export function NavUser({ collapsed = false }: { collapsed?: boolean }) {
   const { user, logout } = useAuthContext();
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
 
   const handleLogout = async (event: Event) => {
     event.preventDefault();
     await logout();
+  };
+
+  const openChangePasswordModal = (event: Event) => {
+    event.preventDefault();
+    setIsChangePasswordModalOpen(true);
   };
 
   const dropdownContent = (
@@ -51,11 +59,12 @@ export function NavUser({ collapsed = false }: { collapsed?: boolean }) {
           <span>Meu perfil</span>
         </Link>
       </DropdownMenuItem>
-      <DropdownMenuItem asChild>
-        <Link href="/change-password" className="flex items-center gap-2 cursor-pointer">
-          <Lock className="h-4 w-4" />
-          <span>Alterar senha</span>
-        </Link>
+      <DropdownMenuItem
+        onSelect={openChangePasswordModal}
+        className="flex items-center gap-2 cursor-pointer"
+      >
+        <Lock className="h-4 w-4" />
+        <span>Alterar senha</span>
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem 
@@ -94,48 +103,56 @@ export function NavUser({ collapsed = false }: { collapsed?: boolean }) {
   }
   
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        {collapsed ? (
-          <Button 
-            variant="ghost" 
-            className="flex h-10 w-10 items-center justify-center rounded-full p-0 hover:bg-slate-100"
-            aria-label="Menu do usuário"
-          >
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={user.avatar_url ?? undefined} alt={user.name || "Avatar"} />
-              <AvatarFallback className="bg-slate-200 text-slate-600">
-                {(user.name?.charAt(0) || user.email.charAt(0)).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
-        ) : (
-          <Button 
-            variant="ghost" 
-            className="flex items-center justify-between w-full p-3 hover:bg-slate-50 rounded-md h-auto"
-            aria-label="Menu do usuário"
-          >
-            <div className="flex items-center gap-3 overflow-hidden">
-               <Avatar className="h-8 w-8 flex-shrink-0">
-                 <AvatarImage src={user.avatar_url ?? undefined} alt={user.name || "Avatar"} />
-                 <AvatarFallback className="bg-slate-200 text-slate-600">
-                   {(user.name?.charAt(0) || user.email.charAt(0)).toUpperCase()}
-                 </AvatarFallback>
-               </Avatar>
-              <div className="flex flex-col items-start flex-1 min-w-0">
-                <span className="text-sm font-medium truncate">
-                  {user.name || "Usuário"}
-                </span>
-                <span className="text-xs text-slate-500 truncate">
-                  {user.email}
-                </span>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          {collapsed ? (
+            <Button 
+              variant="ghost" 
+              className="flex h-10 w-10 items-center justify-center rounded-full p-0 hover:bg-slate-100"
+              aria-label="Menu do usuário"
+            >
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user.avatar_url ?? undefined} alt={user.name || "Avatar"} />
+                <AvatarFallback className="bg-slate-200 text-slate-600">
+                  {(user.name?.charAt(0) || user.email.charAt(0)).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+          ) : (
+            <Button 
+              variant="ghost" 
+              className="flex items-center justify-between w-full p-3 hover:bg-slate-50 rounded-md h-auto"
+              aria-label="Menu do usuário"
+            >
+              <div className="flex items-center gap-3 overflow-hidden">
+                 <Avatar className="h-8 w-8 flex-shrink-0">
+                   <AvatarImage src={user.avatar_url ?? undefined} alt={user.name || "Avatar"} />
+                   <AvatarFallback className="bg-slate-200 text-slate-600">
+                     {(user.name?.charAt(0) || user.email.charAt(0)).toUpperCase()}
+                   </AvatarFallback>
+                 </Avatar>
+                <div className="flex flex-col items-start flex-1 min-w-0">
+                  <span className="text-sm font-medium truncate">
+                    {user.name || "Usuário"}
+                  </span>
+                  <span className="text-xs text-slate-500 truncate">
+                    {user.email}
+                  </span>
+                </div>
               </div>
-            </div>
-          </Button>
-        )}
-      </DropdownMenuTrigger>
-      
-      {dropdownContent} 
-    </DropdownMenu>
+            </Button>
+          )}
+        </DropdownMenuTrigger>
+        
+        {dropdownContent} 
+      </DropdownMenu>
+
+      <ChangePasswordModal
+        open={isChangePasswordModalOpen}
+        onOpenChange={setIsChangePasswordModalOpen}
+      >
+      </ChangePasswordModal>
+    </>
   );
 } 

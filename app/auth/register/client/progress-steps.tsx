@@ -1,7 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-
 /**
  * Componente que exibe o progresso de preenchimento dos steps
  * Mostra os passos concluídos, atuais e pendentes
@@ -29,7 +27,7 @@ export function ProgressSteps({
   progressPercentage,
 }: ProgressStepsProps) {
   // Criar array com o número de etapas para iterar
-  const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
+  // const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
 
   return (
     <div className="mb-8">
